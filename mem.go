@@ -219,7 +219,7 @@ func (m *MemOnlyIndex) TopN(limit int, query iq.Query, cb func(int32, float32, D
 		}
 
 		if doInsert {
-			hit := Hit{Score: score, Id: did, Document: d}
+			hit := Hit{Score: score, ID: did, Document: d}
 			if len(scored) < limit {
 				scored = append(scored, hit)
 			}
