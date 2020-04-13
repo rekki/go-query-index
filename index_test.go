@@ -10,7 +10,7 @@ import (
 	"testing"
 
 	iq "github.com/rekki/go-query"
-	spec "github.com/rekki/go-query/util/go_query_dsl"
+	spec "github.com/rekki/go-query-index/go_query_dsl"
 )
 
 // get full list from https://raw.githubusercontent.com/lutangar/cities.json/master/cities.json

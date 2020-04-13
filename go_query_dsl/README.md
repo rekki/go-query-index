@@ -1,7 +1,7 @@
 # go_query_dsl
---
-    import "github.com/rekki/go-query/util/go_query_dsl"
 
+--
+import "github.com/rekki/go-query-index/go_query_dsl"
 
 ## Usage
 
@@ -44,128 +44,127 @@ type Query struct {
 }
 ```
 
-
-#### func (*Query) Descriptor
+#### func (\*Query) Descriptor
 
 ```go
 func (*Query) Descriptor() ([]byte, []int)
 ```
 
-#### func (*Query) GetBoost
+#### func (\*Query) GetBoost
 
 ```go
 func (m *Query) GetBoost() float32
 ```
 
-#### func (*Query) GetField
+#### func (\*Query) GetField
 
 ```go
 func (m *Query) GetField() string
 ```
 
-#### func (*Query) GetNot
+#### func (\*Query) GetNot
 
 ```go
 func (m *Query) GetNot() *Query
 ```
 
-#### func (*Query) GetQueries
+#### func (\*Query) GetQueries
 
 ```go
 func (m *Query) GetQueries() []*Query
 ```
 
-#### func (*Query) GetTiebreaker
+#### func (\*Query) GetTiebreaker
 
 ```go
 func (m *Query) GetTiebreaker() float32
 ```
 
-#### func (*Query) GetType
+#### func (\*Query) GetType
 
 ```go
 func (m *Query) GetType() Query_Type
 ```
 
-#### func (*Query) GetValue
+#### func (\*Query) GetValue
 
 ```go
 func (m *Query) GetValue() string
 ```
 
-#### func (*Query) Marshal
+#### func (\*Query) Marshal
 
 ```go
 func (m *Query) Marshal() (dAtA []byte, err error)
 ```
 
-#### func (*Query) MarshalTo
+#### func (\*Query) MarshalTo
 
 ```go
 func (m *Query) MarshalTo(dAtA []byte) (int, error)
 ```
 
-#### func (*Query) MarshalToSizedBuffer
+#### func (\*Query) MarshalToSizedBuffer
 
 ```go
 func (m *Query) MarshalToSizedBuffer(dAtA []byte) (int, error)
 ```
 
-#### func (*Query) ProtoMessage
+#### func (\*Query) ProtoMessage
 
 ```go
 func (*Query) ProtoMessage()
 ```
 
-#### func (*Query) Reset
+#### func (\*Query) Reset
 
 ```go
 func (m *Query) Reset()
 ```
 
-#### func (*Query) Size
+#### func (\*Query) Size
 
 ```go
 func (m *Query) Size() (n int)
 ```
 
-#### func (*Query) String
+#### func (\*Query) String
 
 ```go
 func (m *Query) String() string
 ```
 
-#### func (*Query) Unmarshal
+#### func (\*Query) Unmarshal
 
 ```go
 func (m *Query) Unmarshal(dAtA []byte) error
 ```
 
-#### func (*Query) XXX_DiscardUnknown
+#### func (\*Query) XXX_DiscardUnknown
 
 ```go
 func (m *Query) XXX_DiscardUnknown()
 ```
 
-#### func (*Query) XXX_Marshal
+#### func (\*Query) XXX_Marshal
 
 ```go
 func (m *Query) XXX_Marshal(b []byte, deterministic bool) ([]byte, error)
 ```
 
-#### func (*Query) XXX_Merge
+#### func (\*Query) XXX_Merge
 
 ```go
 func (m *Query) XXX_Merge(src proto.Message)
 ```
 
-#### func (*Query) XXX_Size
+#### func (\*Query) XXX_Size
 
 ```go
 func (m *Query) XXX_Size() int
 ```
 
-#### func (*Query) XXX_Unmarshal
+#### func (\*Query) XXX_Unmarshal
 
 ```go
 func (m *Query) XXX_Unmarshal(b []byte) error
@@ -176,7 +175,6 @@ func (m *Query) XXX_Unmarshal(b []byte) error
 ```go
 type Query_Type int32
 ```
-
 
 ```go
 const (

@@ -2,9 +2,9 @@
 package index
 
 import (
+	"github.com/rekki/go-query-index/analyzer"
 	norm "github.com/rekki/go-query-normalize"
 	tokenize "github.com/rekki/go-query-tokenize"
-	"github.com/rekki/go-query/util/analyzer"
 )
 
 // Document provides an interface on the documents you want indexed
@@ -105,5 +105,5 @@ var FuzzyAnalyzer = analyzer.NewAnalyzer(
 var AutocompleteAnalyzer = analyzer.NewAnalyzer(
 	DefaultNormalizer,
 	DefaultSearchTokenizer,
-	AutocompleteIndexToken,
-	izer)
+	AutocompleteIndexTokenizer,
+)

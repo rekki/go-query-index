@@ -10,9 +10,9 @@ import (
 	"sync"
 
 	iq "github.com/rekki/go-query"
+	"github.com/rekki/go-query-index/analyzer"
+	spec "github.com/rekki/go-query-index/go_query_dsl"
 	normalizeTools "github.com/rekki/go-query-normalize/tools"
-	"github.com/rekki/go-query/util/analyzer"
-	spec "github.com/rekki/go-query/util/go_query_dsl"
 )
 
 type FDCache struct {

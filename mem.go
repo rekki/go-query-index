@@ -5,8 +5,8 @@ import (
 	"sync"
 
 	iq "github.com/rekki/go-query"
-	"github.com/rekki/go-query/util/analyzer"
-	spec "github.com/rekki/go-query/util/go_query_dsl"
+	"github.com/rekki/go-query-index/analyzer"
+	spec "github.com/rekki/go-query-index/go_query_dsl"
 )
 
 type MemOnlyIndex struct {

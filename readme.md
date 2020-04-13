@@ -11,7 +11,7 @@ import (
   "log"
 
   iq "github.com/rekki/go-query"
-  "github.com/rekki/go-query/util/analyzer"
+  "github.com/rekki/go-query-index/analyzer"
   "github.com/rekki/go-query/util/index"
 )
 

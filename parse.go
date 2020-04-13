@@ -7,7 +7,7 @@ import (
 
 	"github.com/gogo/protobuf/jsonpb"
 	iq "github.com/rekki/go-query"
-	spec "github.com/rekki/go-query/util/go_query_dsl"
+	spec "github.com/rekki/go-query-index/go_query_dsl"
 )
 
 // somewhat useless method (besides for testing)
