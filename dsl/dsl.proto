@@ -1,0 +1,19 @@
+syntax = "proto3";
+
+package go.query.dsl;
+
+message Query {
+        repeated Query queries = 1;
+        enum Type {
+        TERM = 0;
+        AND = 1;
+        OR = 2;
+        DISMAX = 3;
+        }
+        Type type = 2;
+        string field = 3;
+        string value = 4;
+        Query not = 5;
+        float tiebreaker = 6;
+        float boost = 7;
+}
