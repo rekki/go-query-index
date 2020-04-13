@@ -9,7 +9,7 @@ import (
 
 // Document provides an interface on the documents you want indexed
 //
-// Example if you want to index fields "name" and "country":
+//  Example if you want to index fields "name" and "country":
 //  type ExampleCity struct {
 //  	Name    string
 //  	Country string
@@ -27,6 +27,9 @@ type Document interface {
 	IndexableFields() map[string][]string
 }
 
+// --- Normalizers ---
+
+// DefaultNormalizer is an default normalizer
 var DefaultNormalizer = []norm.Normalizer{
 	norm.NewUnaccent(),
 	norm.NewLowerCase(),
@@ -35,23 +38,25 @@ var DefaultNormalizer = []norm.Normalizer{
 	norm.NewTrim(" "),
 }
 
+// --- Tokenizers ---
+
+// DefaultSearchTokenizer is an default search tokenizer
 var DefaultSearchTokenizer = []tokenize.Tokenizer{
 	tokenize.NewWhitespace(),
 }
 
+// DefaultIndexTokenizer is an default tokenizer
 var DefaultIndexTokenizer = []tokenize.Tokenizer{
 	tokenize.NewWhitespace(),
 }
 
-var DefaultAnalyzer = analyzer.NewAnalyzer(DefaultNormalizer, DefaultSearchTokenizer, DefaultIndexTokenizer)
-
-var IDAnalyzer = analyzer.NewAnalyzer([]norm.Normalizer{norm.NewNoop()}, []tokenize.Tokenizer{tokenize.NewNoop()}, []tokenize.Tokenizer{tokenize.NewNoop()})
-
+// SoundexTokenizer is an soundex tokenizer
 var SoundexTokenizer = []tokenize.Tokenizer{
 	tokenize.NewWhitespace(),
 	tokenize.NewSoundex(),
 }
 
+// FuzzyTokenizer is an fuzzy tokenizer
 var FuzzyTokenizer = []tokenize.Tokenizer{
 	tokenize.NewWhitespace(),
 	tokenize.NewCharNgram(2),
@@ -59,13 +64,46 @@ var FuzzyTokenizer = []tokenize.Tokenizer{
 	tokenize.NewSurround("$"),
 }
 
+// AutocompleteIndexTokenizer is an autocompelete tokenizer
 var AutocompleteIndexTokenizer = []tokenize.Tokenizer{
 	tokenize.NewWhitespace(),
 	tokenize.NewLeftEdge(1),
 }
 
-var SoundexAnalyzer = analyzer.NewAnalyzer(DefaultNormalizer, SoundexTokenizer, SoundexTokenizer)
+// --- Analyzers ---
 
-var FuzzyAnalyzer = analyzer.NewAnalyzer(DefaultNormalizer, FuzzyTokenizer, FuzzyTokenizer)
+// DefaultAnalyzer is an default analyzer
+var DefaultAnalyzer = analyzer.NewAnalyzer(
+	DefaultNormalizer,
+	DefaultSearchTokenizer,
+	DefaultIndexTokenizer,
+)
 
-var AutocompleteAnalyzer = analyzer.NewAnalyzer(DefaultNormalizer, DefaultSearchTokenizer, AutocompleteIndexTokenizer)
+// IDAnalyzer is an id analyzer
+var IDAnalyzer = analyzer.NewAnalyzer(
+	[]norm.Normalizer{norm.NewNoop()},
+	[]tokenize.Tokenizer{tokenize.NewNoop()},
+	[]tokenize.Tokenizer{tokenize.NewNoop()},
+)
+
+// SoundexAnalyzer provides an analyzer for soundex
+// https://en.wikipedia.org/wiki/Soundex
+var SoundexAnalyzer = analyzer.NewAnalyzer(
+	DefaultNormalizer,
+	SoundexTokenizer,
+	SoundexTokenizer,
+)
+
+// FuzzyAnalyzer provides an analyzer for the fuzzy search
+var FuzzyAnalyzer = analyzer.NewAnalyzer(
+	DefaultNormalizer,
+	FuzzyTokenizer,
+	FuzzyTokenizer,
+)
+
+// AutocompleteAnalyzer is an autocomplete analyzer
+var AutocompleteAnalyzer = analyzer.NewAnalyzer(
+	DefaultNormalizer,
+	DefaultSearchTokenizer,
+	AutocompleteIndexToken,
+	izer)
