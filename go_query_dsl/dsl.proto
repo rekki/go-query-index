@@ -2,6 +2,8 @@ syntax = "proto3";
 
 package go.query.dsl;
 
+import "github.com/gogo/protobuf/gogoproto/gogo.proto";
+
 message Query {
         repeated Query queries = 1;
         enum Type {
