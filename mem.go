@@ -9,6 +9,7 @@ import (
 	spec "github.com/rekki/go-query-index/go_query_dsl"
 )
 
+// MemOnlyIndex is representation of an index stored in the memory
 type MemOnlyIndex struct {
 	perField map[string]*analyzer.Analyzer
 	postings map[string]map[string][]int32
@@ -16,8 +17,7 @@ type MemOnlyIndex struct {
 	sync.RWMutex
 }
 
-// create new in-memory index with the specified perField analyzer
-// by default DefaultAnalyzer is used
+// NewMemOnlyIndex creates new in-memory index with the specified perField analyzer by default DefaultAnalyzer is used
 func NewMemOnlyIndex(perField map[string]*analyzer.Analyzer) *MemOnlyIndex {
 	if perField == nil {
 		perField = map[string]*analyzer.Analyzer{}
@@ -26,7 +26,7 @@ func NewMemOnlyIndex(perField map[string]*analyzer.Analyzer) *MemOnlyIndex {
 	return m
 }
 
-// index a bunch of documents
+// Index a bunch of documents
 func (m *MemOnlyIndex) Index(docs ...Document) {
 	m.Lock()
 	defer m.Unlock()
@@ -114,8 +114,7 @@ func (m *MemOnlyIndex) Parse(input *spec.Query) (iq.Query, error) {
 	})
 }
 
-// Generate array of queries from the tokenized term for this field,
-// using the perField analyzer
+// Terms generates array of queries from the tokenized term for this field, using the perField analyzer
 func (m *MemOnlyIndex) Terms(field string, term string) []iq.Query {
 	m.RLock()
 	defer m.RUnlock()
@@ -239,12 +238,14 @@ func (m *MemOnlyIndex) TopN(limit int, query iq.Query, cb func(int32, float32, D
 	return out
 }
 
+// Hit is struct result for `TopN` method
 type Hit struct {
 	Score    float32  `json:"score"`
-	Id       int32    `json:"id"`
+	ID       int32    `json:"id"`
 	Document Document `json:"doc"`
 }
 
+// SearchResult is the search result for the `TopN` method
 type SearchResult struct {
 	Total int   `json:"total"`
 	Hits  []Hit `json:"hits"`

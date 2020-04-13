@@ -10,6 +10,7 @@ import (
 	spec "github.com/rekki/go-query-index/go_query_dsl"
 )
 
+// QueryFromBytes returns bytes from a query
 // somewhat useless method (besides for testing)
 // Example:
 //  query, err := QueryFromBytes([]byte(`{
@@ -37,9 +38,9 @@ func QueryFromBytes(b []byte) (*spec.Query, error) {
 	return q, nil
 }
 
-// simple (*slow*) helper method that takes interface{} and converst it to spec.Query with jsonpb
-// in case you receive request like request = {"limit":10, query: ....}, pass request.query to QueryFromJson and get a query object back
-func QueryFromJson(input interface{}) (*spec.Query, error) {
+// QueryFromJSON is a simple (*slow*) helper method that takes interface{} and converst it to spec.Query with jsonpb
+// in case you receive request like request = {"limit":10, query: ....}, pass request.query to QueryFromJSON and get a query object back
+func QueryFromJSON(input interface{}) (*spec.Query, error) {
 	b, err := json.Marshal(input)
 	if err != nil {
 		return nil, err
@@ -53,7 +54,7 @@ func QueryFromJson(input interface{}) (*spec.Query, error) {
 	return q, nil
 }
 
-// Take spec.Query object and a makeTermQuery function and produce a parsed query
+// Parse takes spec.Query object and a makeTermQuery function and produce a parsed query
 // Example:
 //  return Parse(input, func(k, v string) iq.Query {
 //  	kv := k + ":"+ v
