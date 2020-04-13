@@ -314,7 +314,7 @@ func TestParsing(t *testing.T) {
 		t.Fatalf("need json error")
 	}
 
-	_, err = QueryFromJson(nil)
+	_, err = QueryFromJSON(nil)
 	if err != nil {
 		t.Fatalf("need field error")
 	}
@@ -455,7 +455,7 @@ func toQuery(s string) *spec.Query {
 	if err != nil {
 		panic(err)
 	}
-	query, err := QueryFromJson(unparsed)
+	query, err := QueryFromJSON(unparsed)
 	if err != nil {
 		panic(err)
 	}
