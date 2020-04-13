@@ -2,7 +2,7 @@
 
 > ## Search index for go-query
 
-Illustration of how you can use go-query to build a somewhat functional search index:
+Illustration of how you can use `go-query-index` to build a somewhat functional search index for `go-query`:
 
 ```go
 package main
@@ -12,7 +12,7 @@ import (
 
   iq "github.com/rekki/go-query"
   "github.com/rekki/go-query-index/analyzer"
-  "github.com/rekki/go-query/util/index"
+  "github.com/rekki/go-query-index"
 )
 
 type ExampleCity struct {
