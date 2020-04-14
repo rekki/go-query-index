@@ -10,9 +10,8 @@ import (
 	"sync"
 
 	iq "github.com/rekki/go-query"
-	"github.com/rekki/go-query-index/analyzer"
-	spec "github.com/rekki/go-query-index/go_query_dsl"
-	normalizeTools "github.com/rekki/go-query-normalize/tools"
+	analyzer "github.com/rekki/go-query-analyze"
+	normalizeTools "github.com/rekki/go-query-analyze/tools"
 )
 
 type FDCache struct {
@@ -182,16 +181,6 @@ func (d *DirIndex) Index(docs ...DocumentWithID) error {
 	}
 
 	return nil
-}
-
-func (d *DirIndex) Parse(input *spec.Query) (iq.Query, error) {
-	return Parse(input, func(k, v string) iq.Query {
-		terms := d.Terms(k, v)
-		if len(terms) == 1 {
-			return terms[0]
-		}
-		return iq.Or(terms...)
-	})
 }
 
 func (d *DirIndex) Terms(field string, term string) []iq.Query {

@@ -5,8 +5,7 @@ import (
 	"sync"
 
 	iq "github.com/rekki/go-query"
-	"github.com/rekki/go-query-index/analyzer"
-	spec "github.com/rekki/go-query-index/go_query_dsl"
+	analyzer "github.com/rekki/go-query-analyze"
 )
 
 // MemOnlyIndex is representation of an index stored in the memory
@@ -67,53 +66,6 @@ func (m *MemOnlyIndex) add(k, v string, did int32) {
 	}
 }
 
-// Parse dsl input into an query object
-// Example:
-//  query, err := QueryFromBytes([]byte(`{
-//    "type": "OR",
-//    "queries": [
-//      {
-//        "field": "name",
-//        "value": "sofia"
-//      },
-//      {
-//        "field": "name",
-//        "value": "amsterdam"
-//      }
-//    ]
-//  }`))
-//  if err != nil {
-//  	panic(err)
-//  }
-//  parsedQuery, err := m.Parse(query)
-//  if err != nil {
-//  	panic(err)
-//  }
-//  top = m.TopN(1, parsedQuery, nil)
-//  ...
-//  {
-//    "total": 3,
-//    "hits": [
-//      {
-//        "score": 1.609438,
-//        "id": 3,
-//        "doc": {
-//          "Name": "Sofia",
-//          "Country": "BG"
-//        }
-//      }
-//    ]
-//  }
-func (m *MemOnlyIndex) Parse(input *spec.Query) (iq.Query, error) {
-	return Parse(input, func(k, v string) iq.Query {
-		terms := m.Terms(k, v)
-		if len(terms) == 1 {
-			return terms[0]
-		}
-		return iq.Or(terms...)
-	})
-}
-
 // Terms generates array of queries from the tokenized term for this field, using the perField analyzer
 func (m *MemOnlyIndex) Terms(field string, term string) []iq.Query {
 	m.RLock()
@@ -125,12 +77,12 @@ func (m *MemOnlyIndex) Terms(field string, term string) []iq.Query {
 	tokens := analyzer.AnalyzeSearch(term)
 	queries := []iq.Query{}
 	for _, t := range tokens {
-		queries = append(queries, m.newTermQuery(field, t))
+		queries = append(queries, m.NewTermQuery(field, t))
 	}
 	return queries
 }
 
-func (m *MemOnlyIndex) newTermQuery(field string, term string) iq.Query {
+func (m *MemOnlyIndex) NewTermQuery(field string, term string) iq.Query {
 	s := fmt.Sprintf("%s:%s", field, term)
 	pk, ok := m.postings[field]
 	if !ok {

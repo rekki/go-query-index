@@ -167,6 +167,8 @@ github.com/quasilyte/go-consistent v0.0.0-20190521200055-c6f3937de18c/go.mod h1:
 github.com/rekki/go-query v0.0.0-20200413082721-f41973a93455/go.mod h1:KyRq5f+3EpORUanjTC3GvwWytso/UQ6LLk3exdX7gFM=
 github.com/rekki/go-query v0.0.0-20200413201616-378f171baed0 h1:fuMKdcuKNBqdBmyULRnGsN63CFlBA50Nej4/HahzIMg=
 github.com/rekki/go-query v0.0.0-20200413201616-378f171baed0/go.mod h1:4jbHO7BtEPYvSBJHm957Kg3P+nWuKoekY7wR1WfbSO0=
+github.com/rekki/go-query-analyze v0.0.0-20200414075041-27287476e08c h1:R9i7xoAlBCwKQYQVjrzw5WAYlK2dWXj0uVlxCCwF5LI=
+github.com/rekki/go-query-analyze v0.0.0-20200414075041-27287476e08c/go.mod h1:1BheYtPfHkdCMPHeiO1ERyzIBbQO4yTN36p4Ch/SMx0=
 github.com/rekki/go-query-normalize v0.0.0-20200413193040-74b6001ad75f/go.mod h1:avG0LKWd4OF1JEcNTH4WwAlf/WrvL6kIqzch8hlMDXo=
 github.com/rekki/go-query-normalize v0.0.0-20200413195628-3179d159bfaa h1:GrFBp52q+OwtpFNY7pkmoKQUhDfFIODk3F0XBoN+PUw=
 github.com/rekki/go-query-normalize v0.0.0-20200413195628-3179d159bfaa/go.mod h1:dS98jcQlb1AhubijbQDS2gHXmGqM9iHn4C9h3w9qiSg=

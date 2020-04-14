@@ -2,9 +2,9 @@
 package index
 
 import (
-	"github.com/rekki/go-query-index/analyzer"
-	norm "github.com/rekki/go-query-normalize"
-	tokenize "github.com/rekki/go-query-tokenize"
+	analyzer "github.com/rekki/go-query-analyze"
+	norm "github.com/rekki/go-query-analyze/normalize"
+	tokenize "github.com/rekki/go-query-analyze/tokenize"
 )
 
 // Document provides an interface on the documents you want indexed
@@ -34,7 +34,7 @@ var DefaultNormalizer = []norm.Normalizer{
 	norm.NewUnaccent(),
 	norm.NewLowerCase(),
 	norm.NewSpaceBetweenDigits(),
-	norm.NewCleanup(norm.BASIC_NON_ALPHANUMERIC),
+	norm.NewRemoveNonAlphanumeric(),
 	norm.NewTrim(" "),
 }
 
