@@ -170,8 +170,6 @@ github.com/rekki/go-query v0.0.0-20200413201616-378f171baed0/go.mod h1:4jbHO7BtE
 github.com/rekki/go-query-analyze v0.0.0-20200414075041-27287476e08c h1:R9i7xoAlBCwKQYQVjrzw5WAYlK2dWXj0uVlxCCwF5LI=
 github.com/rekki/go-query-analyze v0.0.0-20200414075041-27287476e08c/go.mod h1:1BheYtPfHkdCMPHeiO1ERyzIBbQO4yTN36p4Ch/SMx0=
 github.com/rekki/go-query-normalize v0.0.0-20200413193040-74b6001ad75f/go.mod h1:avG0LKWd4OF1JEcNTH4WwAlf/WrvL6kIqzch8hlMDXo=
-github.com/rekki/go-query-normalize v0.0.0-20200413195628-3179d159bfaa h1:GrFBp52q+OwtpFNY7pkmoKQUhDfFIODk3F0XBoN+PUw=
-github.com/rekki/go-query-normalize v0.0.0-20200413195628-3179d159bfaa/go.mod h1:dS98jcQlb1AhubijbQDS2gHXmGqM9iHn4C9h3w9qiSg=
 github.com/rekki/go-query-tokenize v0.0.0-20200413200010-8e9129b70907 h1:jpIthl1SF0JT7HlLeNkKeuSx2nhvQy3iY6bZGr8xX18=
 github.com/rekki/go-query-tokenize v0.0.0-20200413200010-8e9129b70907/go.mod h1:+nIhyo/9RY68w0wkDROWgZbAgj2SvMNhSyDLBXeAWvw=
 github.com/rogpeppe/fastuuid v0.0.0-20150106093220-6724a57986af/go.mod h1:XWv6SoW27p1b0cqNHllgS5HIMJraePCO15w5zCzIWYg=
