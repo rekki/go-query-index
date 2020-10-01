@@ -197,8 +197,12 @@ func (m *MemOnlyIndex) Foreach(query iq.Query, cb func(int32, float32, Document)
 	for query.Next() != iq.NO_MORE {
 		did := query.GetDocId()
 		score := query.Score()
-
-		cb(did, score, m.forward[did])
+		doc := m.forward[did]
+		if doc == nil {
+			// search on deleted doc
+			continue
+		}
+		cb(did, score, doc)
 	}
 }
 
