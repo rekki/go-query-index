@@ -157,6 +157,7 @@ func (m *MemOnlyIndex) deletePostings(k, v string, did int32) {
 func (m *MemOnlyIndex) Terms(field string, term string) []iq.Query {
 	m.RLock()
 	defer m.RUnlock()
+
 	analyzer, ok := m.perField[field]
 	if !ok {
 		analyzer = DefaultAnalyzer
@@ -170,6 +171,9 @@ func (m *MemOnlyIndex) Terms(field string, term string) []iq.Query {
 }
 
 func (m *MemOnlyIndex) NewTermQuery(field string, term string) iq.Query {
+	m.RLock()
+	defer m.RUnlock()
+
 	s := fmt.Sprintf("%s:%s", field, term)
 	pk, ok := m.postings[field]
 	if !ok {
@@ -194,14 +198,13 @@ func (m *MemOnlyIndex) NewTermQuery(field string, term string) iq.Query {
 //  	log.Printf("%v matching with score %f", city, score)
 //  })
 func (m *MemOnlyIndex) Foreach(query iq.Query, cb func(int32, float32, Document)) {
+	m.RLock()
+	defer m.RUnlock()
+
 	for query.Next() != iq.NO_MORE {
 		did := query.GetDocId()
 		score := query.Score()
 		doc := m.forward[did]
-		if doc == nil {
-			// search on deleted doc
-			continue
-		}
 		cb(did, score, doc)
 	}
 }
