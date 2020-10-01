@@ -14,6 +14,10 @@ type MemOnlyIndex struct {
 	perField map[string]*analyzer.Analyzer
 	postings map[string]map[string][]int32
 	forward  []Document
+
+	// stored twice, but just for convinience
+	forwardByID map[string]int32
+	IDField     string
 	sync.RWMutex
 }
 
@@ -22,7 +26,7 @@ func NewMemOnlyIndex(perField map[string]*analyzer.Analyzer) *MemOnlyIndex {
 	if perField == nil {
 		perField = map[string]*analyzer.Analyzer{}
 	}
-	m := &MemOnlyIndex{postings: map[string]map[string][]int32{}, perField: perField}
+	m := &MemOnlyIndex{postings: map[string]map[string][]int32{}, perField: perField, forwardByID: map[string]int32{}, IDField: "_id"}
 	return m
 }
 
@@ -30,17 +34,41 @@ func (m *MemOnlyIndex) Get(id int32) Document {
 	return m.forward[id]
 }
 
+func (m *MemOnlyIndex) GetByID(uuid string) Document {
+	if id, ok := m.forwardByID[uuid]; ok {
+		return m.forward[id]
+	}
+	return nil
+}
+
+func (m *MemOnlyIndex) DeleteByID(uuid string) {
+	if id, ok := m.forwardByID[uuid]; ok {
+		m.Delete(id)
+	}
+}
 func (m *MemOnlyIndex) Delete(id int32) {
 	m.Lock()
 	defer m.Unlock()
 	d := m.forward[id]
 
 	fields := d.IndexableFields()
+
 	for field, value := range fields {
+		if field == m.IDField {
+			for _, v := range value {
+				delete(m.forwardByID, v)
+			}
+		}
+
 		analyzer, ok := m.perField[field]
 		if !ok {
-			analyzer = DefaultAnalyzer
+			if field == m.IDField || field == "id" || field == "uuid" {
+				analyzer = IDAnalyzer
+			} else {
+				analyzer = DefaultAnalyzer
+			}
 		}
+
 		for _, v := range value {
 			tokens := analyzer.AnalyzeIndex(v)
 			for _, t := range tokens {
@@ -62,10 +90,21 @@ func (m *MemOnlyIndex) Index(docs ...Document) {
 		did := len(m.forward)
 		m.forward = append(m.forward, d)
 		for field, value := range fields {
+			if field == m.IDField {
+				for _, v := range value {
+					m.forwardByID[v] = int32(did)
+				}
+			}
+
 			analyzer, ok := m.perField[field]
 			if !ok {
-				analyzer = DefaultAnalyzer
+				if field == m.IDField || field == "id" || field == "uuid" {
+					analyzer = IDAnalyzer
+				} else {
+					analyzer = DefaultAnalyzer
+				}
 			}
+
 			for _, v := range value {
 				tokens := analyzer.AnalyzeIndex(v)
 				for _, t := range tokens {

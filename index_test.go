@@ -15,6 +15,7 @@ import (
 type ExampleCity struct {
 	ID      int32
 	Name    string
+	TestID  string
 	Country string
 	Names   []string
 }
@@ -28,6 +29,7 @@ func (e *ExampleCity) IndexableFields() map[string][]string {
 
 	out["name"] = []string{e.Name}
 	out["names"] = e.Names
+	out["_id"] = []string{e.TestID}
 	out["country"] = []string{e.Country}
 
 	return out
@@ -106,6 +108,70 @@ func TestDelete(t *testing.T) {
 	expect("paris", 2, 1)
 	expect("paris", 2, 1)
 	m.Delete(2)
+	if m.Get(2) != nil {
+		t.Fatal("expected nil")
+	}
+
+	expect("amsterdam", 0, 1)
+	expect("sofia", 1, 0)
+	expect("paris", 2, 0)
+
+	m.Index(toDocuments([]*ExampleCity{{Names: []string{"Sofia", "Sofia"}, Country: "NL"}})...)
+	expect("amsterdam", 0, 1)
+	expect("sofia", 3, 1)
+	expect("paris", 2, 0)
+
+	m.Index(toDocuments([]*ExampleCity{{Names: []string{"Paris", "Paris"}, Country: "NL"}})...)
+	expect("paris", 4, 1)
+
+}
+
+func TestDeleteByID(t *testing.T) {
+	m := NewMemOnlyIndex(nil)
+	list := []*ExampleCity{
+		{Names: []string{"Amsterdam", "Amsterdam"}, Country: "NL", TestID: "a"},
+		{Names: []string{"Sofia", "Sofia"}, Country: "NL", TestID: "b"},
+		{Names: []string{"Paris", "Paris"}, Country: "FR", TestID: "c"},
+	}
+
+	m.Index(toDocuments(list)...)
+
+	expect := func(term string, id int32, expected int) {
+		q := iq.And(m.Terms("names", term)...)
+		n := 0
+		m.Foreach(q, func(did int32, score float32, doc Document) {
+			n++
+			if did != id {
+				t.Fatalf("%s unexpected match %d got %d", term, id, did)
+			}
+		})
+		if n != expected {
+			t.Fatalf("%s expected %d got %d", term, expected, n)
+		}
+
+	}
+
+	expect("amsterdam", 0, 1)
+	expect("sofia", 1, 1)
+	expect("paris", 2, 1)
+
+	m.DeleteByID("b")
+	if m.Get(1) != nil {
+		t.Fatal("expected nil")
+	}
+	if m.GetByID("b") != nil {
+		t.Fatal("expected nil")
+	}
+	expect("amsterdam", 0, 1)
+	expect("sofia", 1, 0)
+	expect("paris", 2, 1)
+	expect("paris", 2, 1)
+
+	m.DeleteByID("c")
+	if m.GetByID("c") != nil {
+		t.Fatal("expected nil")
+	}
+
 	if m.Get(2) != nil {
 		t.Fatal("expected nil")
 	}
