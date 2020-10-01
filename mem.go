@@ -2,6 +2,7 @@ package index
 
 import (
 	"fmt"
+	"sort"
 	"sync"
 
 	iq "github.com/rekki/go-query"
@@ -25,6 +26,32 @@ func NewMemOnlyIndex(perField map[string]*analyzer.Analyzer) *MemOnlyIndex {
 	return m
 }
 
+func (m *MemOnlyIndex) Get(id int32) Document {
+	return m.forward[id]
+}
+
+func (m *MemOnlyIndex) Delete(id int32) {
+	m.Lock()
+	defer m.Unlock()
+	d := m.forward[id]
+
+	fields := d.IndexableFields()
+	for field, value := range fields {
+		analyzer, ok := m.perField[field]
+		if !ok {
+			analyzer = DefaultAnalyzer
+		}
+		for _, v := range value {
+			tokens := analyzer.AnalyzeIndex(v)
+			for _, t := range tokens {
+				m.deletePostings(field, t, id)
+			}
+		}
+	}
+
+	m.forward[id] = nil
+}
+
 // Index a bunch of documents
 func (m *MemOnlyIndex) Index(docs ...Document) {
 	m.Lock()
@@ -42,14 +69,14 @@ func (m *MemOnlyIndex) Index(docs ...Document) {
 			for _, v := range value {
 				tokens := analyzer.AnalyzeIndex(v)
 				for _, t := range tokens {
-					m.add(field, t, int32(did))
+					m.addPostings(field, t, int32(did))
 				}
 			}
 		}
 	}
 }
 
-func (m *MemOnlyIndex) add(k, v string, did int32) {
+func (m *MemOnlyIndex) addPostings(k, v string, did int32) {
 	pk, ok := m.postings[k]
 	if !ok {
 		pk = map[string][]int32{}
@@ -63,6 +90,27 @@ func (m *MemOnlyIndex) add(k, v string, did int32) {
 		if current[len(current)-1] != did {
 			pk[v] = append(current, did)
 		}
+	}
+}
+
+func (m *MemOnlyIndex) deletePostings(k, v string, did int32) {
+	pk, ok := m.postings[k]
+	if !ok {
+		return
+	}
+
+	current, ok := pk[v]
+	if !ok || len(current) == 0 {
+		return
+	}
+
+	// find the index where this documentID is and cut the slice
+	found := sort.Search(len(current), func(i int) bool {
+		return current[i] <= did
+	})
+
+	if found < len(current) && current[found] == did {
+		pk[v] = append(current[:found], current[found+1:]...)
 	}
 }
 

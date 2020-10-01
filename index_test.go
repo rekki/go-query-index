@@ -68,6 +68,62 @@ func TestUnique(t *testing.T) {
 	}
 }
 
+func TestDelete(t *testing.T) {
+	m := NewMemOnlyIndex(nil)
+	list := []*ExampleCity{
+		{Names: []string{"Amsterdam", "Amsterdam"}, Country: "NL"},
+		{Names: []string{"Sofia", "Sofia"}, Country: "NL"},
+		{Names: []string{"Paris", "Paris"}, Country: "FR"},
+	}
+
+	m.Index(toDocuments(list)...)
+
+	expect := func(term string, id int32, expected int) {
+		q := iq.And(m.Terms("names", term)...)
+		n := 0
+		m.Foreach(q, func(did int32, score float32, doc Document) {
+			n++
+			if did != id {
+				t.Fatalf("%s unexpected match %d got %d", term, id, did)
+			}
+		})
+		if n != expected {
+			t.Fatalf("%s expected %d got %d", term, expected, n)
+		}
+
+	}
+
+	expect("amsterdam", 0, 1)
+	expect("sofia", 1, 1)
+	expect("paris", 2, 1)
+
+	m.Delete(1)
+	if m.Get(1) != nil {
+		t.Fatal("expected nil")
+	}
+	expect("amsterdam", 0, 1)
+	expect("sofia", 1, 0)
+	expect("paris", 2, 1)
+	expect("paris", 2, 1)
+	m.Delete(2)
+	if m.Get(2) != nil {
+		t.Fatal("expected nil")
+	}
+
+	expect("amsterdam", 0, 1)
+	expect("sofia", 1, 0)
+	expect("paris", 2, 0)
+
+	m.Index(toDocuments([]*ExampleCity{{Names: []string{"Sofia", "Sofia"}, Country: "NL"}})...)
+	expect("amsterdam", 0, 1)
+	expect("sofia", 3, 1)
+	expect("paris", 2, 0)
+
+	m.Index(toDocuments([]*ExampleCity{{Names: []string{"Paris", "Paris"}, Country: "NL"}})...)
+	expect("paris", 4, 1)
+
+}
+
 func TestExample(t *testing.T) {
 	m := NewMemOnlyIndex(nil)
 	list := []*ExampleCity{
