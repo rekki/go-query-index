@@ -211,6 +211,9 @@ func (m *MemOnlyIndex) NewTermQuery(field string, term string) iq.Query {
 //  	log.Printf("%v matching with score %f", city, score)
 //  })
 func (m *MemOnlyIndex) Foreach(query iq.Query, cb func(int32, float32, Document)) {
+	m.RLock()
+	defer m.RUnlock()
+
 	for query.Next() != iq.NO_MORE {
 		did := query.GetDocId()
 		score := query.Score()
