@@ -35,20 +35,33 @@ func (m *MemOnlyIndex) Get(id int32) Document {
 }
 
 func (m *MemOnlyIndex) GetByID(uuid string) Document {
-	if id, ok := m.forwardByID[uuid]; ok {
+	m.RLock()
+	id, ok := m.forwardByID[uuid]
+	m.RUnlock()
+
+	if ok {
 		return m.forward[id]
 	}
 	return nil
 }
 
 func (m *MemOnlyIndex) DeleteByID(uuid string) {
-	if id, ok := m.forwardByID[uuid]; ok {
-		m.Delete(id)
+	m.Lock()
+	defer m.Unlock()
+
+	id, ok := m.forwardByID[uuid]
+	if ok {
+		m.deleteLocked(id)
 	}
 }
+
 func (m *MemOnlyIndex) Delete(id int32) {
 	m.Lock()
 	defer m.Unlock()
+	m.deleteLocked(id)
+}
+
+func (m *MemOnlyIndex) deleteLocked(id int32) {
 	d := m.forward[id]
 
 	fields := d.IndexableFields()
