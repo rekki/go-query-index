@@ -158,7 +158,7 @@ func (m *MemOnlyIndex) deletePostings(k, v string, did int32) {
 
 	// find the index where this documentID is and cut the slice
 	found := sort.Search(len(current), func(i int) bool {
-		return current[i] <= did
+		return current[i] >= did
 	})
 
 	if found < len(current) && current[found] == did {
@@ -220,6 +220,12 @@ func (m *MemOnlyIndex) Foreach(query iq.Query, cb func(int32, float32, Document)
 		doc := m.forward[did]
 		if doc == nil {
 			// deleted
+			// there is a race here between m.Terms() and m.Foreach()
+			// m.Terms() will return a slice that might have document id inside
+			// that is in parallel deleted before the caller calls m.Foreach
+			// and it can return null document
+			// ther is no point in locking, as the next m.Terms will hold the right
+			// value
 			continue
 		}
 		cb(did, score, doc)

@@ -4,8 +4,10 @@ import (
 	"fmt"
 	"io/ioutil"
 	"log"
+	"math/rand"
 	"os"
 	"testing"
+	"time"
 
 	iq "github.com/rekki/go-query"
 )
@@ -71,59 +73,51 @@ func TestUnique(t *testing.T) {
 }
 
 func TestDelete(t *testing.T) {
-	m := NewMemOnlyIndex(nil)
-	list := []*ExampleCity{
-		{Names: []string{"Amsterdam", "Amsterdam"}, Country: "NL"},
-		{Names: []string{"Sofia", "Sofia"}, Country: "NL"},
-		{Names: []string{"Paris", "Paris"}, Country: "FR"},
-	}
+	rand.Seed(time.Now().UnixNano())
+	for k := 0; k < 100; k++ {
+		m := NewMemOnlyIndex(nil)
+		list := []*ExampleCity{}
 
-	m.Index(toDocuments(list)...)
-
-	expect := func(term string, id int32, expected int) {
-		q := iq.And(m.Terms("names", term)...)
-		n := 0
-		m.Foreach(q, func(did int32, score float32, doc Document) {
-			n++
-			if did != id {
-				t.Fatalf("%s unexpected match %d got %d", term, id, did)
-			}
-		})
-		if n != expected {
-			t.Fatalf("%s expected %d got %d", term, expected, n)
+		max := 1000
+		min := 100
+		end := min + rand.Intn(max)
+		for j := 0; j < end; j++ {
+			list = append(list, &ExampleCity{Names: []string{fmt.Sprintf("%d", j), "everything"}})
 		}
 
+		m.Index(toDocuments(list)...)
+
+		expect := func(term string, expected int) {
+			q := iq.And(m.Terms("names", term)...)
+			n := 0
+
+			m.Foreach(q, func(did int32, score float32, doc Document) {
+				n++
+			})
+
+			if n != expected {
+				t.Fatalf("%s expected %d got %d", term, expected, n)
+			}
+		}
+
+		deleted := map[int32]bool{}
+		for i := 0; i < 100; i++ {
+			did := int32(rand.Intn(end))
+			if deleted[did] {
+				continue
+			}
+
+			expect("everything", len(list)-len(deleted))
+
+			m.Delete(did)
+			if m.Get(did) != nil {
+				t.Fatal("expected nil")
+			}
+
+			deleted[did] = true
+			expect("everything", len(list)-len(deleted))
+		}
 	}
-
-	expect("amsterdam", 0, 1)
-	expect("sofia", 1, 1)
-	expect("paris", 2, 1)
-
-	m.Delete(1)
-	if m.Get(1) != nil {
-		t.Fatal("expected nil")
-	}
-	expect("amsterdam", 0, 1)
-	expect("sofia", 1, 0)
-	expect("paris", 2, 1)
-	expect("paris", 2, 1)
-	m.Delete(2)
-	if m.Get(2) != nil {
-		t.Fatal("expected nil")
-	}
-
-	expect("amsterdam", 0, 1)
-	expect("sofia", 1, 0)
-	expect("paris", 2, 0)
-
-	m.Index(toDocuments([]*ExampleCity{{Names: []string{"Sofia", "Sofia"}, Country: "NL"}})...)
-	expect("amsterdam", 0, 1)
-	expect("sofia", 3, 1)
-	expect("paris", 2, 0)
-
-	m.Index(toDocuments([]*ExampleCity{{Names: []string{"Paris", "Paris"}, Country: "NL"}})...)
-	expect("paris", 4, 1)
-
 }
 
 func TestDeleteByID(t *testing.T) {
