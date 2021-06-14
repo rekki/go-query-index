@@ -30,6 +30,30 @@ func NewMemOnlyIndex(perField map[string]*analyzer.Analyzer) *MemOnlyIndex {
 	return m
 }
 
+func (a *MemOnlyIndex) MergeInto(b *MemOnlyIndex) {
+	offset := int32(len(a.forward))
+
+	for k, v := range b.perField {
+		a.perField[k] = v
+	}
+
+	for field, terms := range b.postings {
+		for term, ps := range terms {
+			as := a.postings[field][term]
+			for _, docId := range ps {
+				as = append(as, docId+offset)
+			}
+			a.postings[field][term] = as
+		}
+	}
+
+	for uuid, docId := range b.forwardByID {
+		a.forwardByID[uuid] = docId + offset
+	}
+
+	a.forward = append(a.forward, b.forward...)
+}
+
 func (m *MemOnlyIndex) Get(id int32) Document {
 	return m.forward[id]
 }
