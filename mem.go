@@ -31,6 +31,12 @@ func NewMemOnlyIndex(perField map[string]*analyzer.Analyzer) *MemOnlyIndex {
 }
 
 func (m *MemOnlyIndex) MergeInto(b *MemOnlyIndex) {
+	m.Lock()
+	defer m.Unlock()
+
+	b.RLock()
+	defer b.RUnlock()
+
 	offset := int32(len(m.forward))
 
 	for k, v := range b.perField {
