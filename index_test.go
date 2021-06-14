@@ -72,6 +72,34 @@ func TestUnique(t *testing.T) {
 	}
 }
 
+func TestMerge(t *testing.T) {
+	a := NewMemOnlyIndex(nil)
+	b := NewMemOnlyIndex(nil)
+	listA := []*ExampleCity{
+		{ID: 0, Names: []string{"Amsterdam", "Amsterdam"}, Country: "NL"},
+		{ID: 2, Names: []string{"Sofia", "Sofia"}, Country: "BG"},
+	}
+	listB := []*ExampleCity{
+		{Names: []string{"Reykjavik", "Reykjavik"}, Country: "IS"},
+		{Names: []string{"Amsterdam", "Amsterdam"}, Country: "NL"},
+	}
+
+	a.Index(toDocuments(listA)...)
+	b.Index(toDocuments(listB)...)
+	a.MergeInto(b)
+
+	n := 0
+	q := iq.Or(a.Terms("names", "Amsterdam")...)
+
+	a.Foreach(q, func(did int32, score float32, doc Document) {
+		n++
+
+	})
+	if n != 2 {
+		t.Fatalf("expected 2 got %d", n)
+	}
+}
+
 func TestDelete(t *testing.T) {
 	rand.Seed(time.Now().UnixNano())
 	for k := 0; k < 100; k++ {
